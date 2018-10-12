@@ -19,6 +19,8 @@ namespace UnityStandardAssets._2D
         private Animator m_Anim;            // Reference to the player's animator component.
         private Rigidbody2D m_Rigidbody2D;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
+        //12_10_18 cambios
+        private bool dobleSalto = false;
 
         private void Awake()
         {
@@ -46,6 +48,10 @@ namespace UnityStandardAssets._2D
 
             // Set the vertical animation
             m_Anim.SetFloat("vSpeed", m_Rigidbody2D.velocity.y);
+            if (m_Grounded)
+            {
+                dobleSalto = false;
+            }
         }
 
 
@@ -90,12 +96,25 @@ namespace UnityStandardAssets._2D
                 }
             }
             // If the player should jump...
-            if (m_Grounded && jump && m_Anim.GetBool("Ground"))
+            /*if (m_Grounded && jump && m_Anim.GetBool("Ground"))
             {
                 // Add a vertical force to the player.
                 m_Grounded = false;
                 m_Anim.SetBool("Ground", false);
                 m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+            }
+            */
+            if ((m_Grounded || !dobleSalto) && jump)
+            {
+                // Add a vertical force to the player.
+                m_Grounded = false;
+                m_Anim.SetBool("Ground", false);
+                GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 0f);
+                m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+                if (!m_Grounded)
+                {
+                    dobleSalto = true;
+                }
             }
         }
 
